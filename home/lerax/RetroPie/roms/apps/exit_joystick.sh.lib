@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+function exit_joystick {
+     exit-joystick
+     pkill mpv
+}
