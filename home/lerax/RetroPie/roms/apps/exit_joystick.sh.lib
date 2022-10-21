@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+trap 'kill $(jobs -p)' EXIT
+
 function exit_joystick {
      exit-joystick
      pkill mpv
