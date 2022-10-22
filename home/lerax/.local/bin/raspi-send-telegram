@@ -1,5 +1,7 @@
 #!/bin/bash
-set -x
+
+export PATH=~/.local/bin:$PATH
+
 # VIDEO CONFIG
 videos_path=~/Videos
 input_extension=mkv
@@ -37,26 +39,32 @@ send-video-to-telegram () {
     convert-video-to-mp4 "${video_fpath}" "${video_output}"
     echo "- Sending to telegram"
     telegram-send --video "${video_output}" --caption "${video_name}" || return
-    echo "- Done! Removing intermediare files"
-    rm -vf "${video_output}"
-    rm -vf "${video_fpath}"
+    rm -vf "${video_output}" "${video_fpath}"
 }
 
 send-videos-to-telegram () {
-    "Looking for videos from ${videos_path}"
+    if ! compgen -G ${videos_path}/*.${input_extension} > /dev/null; then
+        return
+    fi
     for video in ${videos_path}/*.${input_extension}; do
-        echo "- Sending: ${video}"
-        send-video-to-telegram "${video}"
+        if [[ -f "$video" ]]; then
+            echo "- Sending: ${video}"
+            send-video-to-telegram "${video}"
+        fi
     done
 }
 
 send-pictures-to-telegram () {
-    "Looking for pictures from ${pictures_path}"
+    if ! compgen -G ${pictures_path}/*.${picture_extension} > /dev/null; then
+        return
+    fi
     for picture in ${pictures_path}/*.${picture_extension}; do
-        echo "- Sending: ${picture}"
-        telegram-send -i "${picture}" --caption=$(extract-picture-name "${video}")
-        echo "- Done! Removing intermediarie files!"
-        rm -fv "${picture}"
+        if [[ -f "$picture" ]]; then
+            echo "- Sending: ${picture}"
+            picture_name=$(basename "${picture}")
+            caption=$(extract-picture-name "${picture_name}")
+            telegram-send -i "${picture}" --caption="${caption}" && rm -fv "${picture}"
+        fi
     done
 }
 
