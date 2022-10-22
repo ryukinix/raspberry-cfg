@@ -27,7 +27,7 @@ convert-video-to-mp4 () {
     local video_fname="$1"
     local video_output="$2"
 
-    ffmpeg -hide_banner -loglevel error -i "${video_fname}" -c:v "${output_codec}" -vf format="${video_format}" "${video_output}"
+    ffmpeg -n -hide_banner -loglevel error -i "${video_fname}" -c:v "${output_codec}" -vf format="${video_format}" "${video_output}"
 }
 
 send-video-to-telegram () {
