@@ -1,0 +1,68 @@
+#!/bin/bash
+set -x
+# VIDEO CONFIG
+videos_path=~/Videos
+input_extension=mkv
+output_extension=mp4
+output_codec=libx264
+video_format=yuv420p
+
+# PICTURE CONFIG
+pictures_path=~/.config/retroarch/screenshots
+picture_extension=png
+
+extract-video-name () {
+    local video_fname="$1"
+    printf "${video_fname%.${input_extension}}"
+}
+
+extract-picture-name () {
+    local picture_fname="$1"
+    printf "${picture_fname%.${picture_extension}}"
+}
+
+convert-video-to-mp4 () {
+    local video_fname="$1"
+    local video_output="$2"
+
+    ffmpeg -hide_banner -loglevel error -i "${video_fname}" -c:v "${output_codec}" -vf format="${video_format}" "${video_output}"
+}
+
+send-video-to-telegram () {
+    local video_fpath="$1"
+    local video_fname=$(basename "${video_fpath}")
+    local video_name=$(extract-video-name "${video_fname}")
+    local video_output="${videos_path}/${video_name}.${output_extension}"
+    echo "- Converting to ${video_output}"
+    convert-video-to-mp4 "${video_fpath}" "${video_output}"
+    echo "- Sending to telegram"
+    telegram-send --video "${video_output}" --caption "${video_name}" || return
+    echo "- Done! Removing intermediare files"
+    rm -vf "${video_output}"
+    rm -vf "${video_fpath}"
+}
+
+send-videos-to-telegram () {
+    "Looking for videos from ${videos_path}"
+    for video in ${videos_path}/*.${input_extension}; do
+        echo "- Sending: ${video}"
+        send-video-to-telegram "${video}"
+    done
+}
+
+send-pictures-to-telegram () {
+    "Looking for pictures from ${pictures_path}"
+    for picture in ${pictures_path}/*.${picture_extension}; do
+        echo "- Sending: ${picture}"
+        telegram-send -i "${picture}" --caption=$(extract-picture-name "${video}")
+        echo "- Done! Removing intermediarie files!"
+        rm -fv "${picture}"
+    done
+}
+
+main () {
+    send-videos-to-telegram
+    send-pictures-to-telegram
+}
+
+main
