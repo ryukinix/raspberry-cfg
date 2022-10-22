@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-trap 'kill $(jobs -p)' EXIT
+trap 'pkill exit-joystick' EXIT
 
 function exit_joystick {
      exit-joystick
