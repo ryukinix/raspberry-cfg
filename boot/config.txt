@@ -18,8 +18,8 @@ disable_overscan=1
 
 # uncomment to force a console size. By default it will be display's size minus
 # overscan.
-#framebuffer_width=1280
-#framebuffer_height=720
+framebuffer_width=960
+framebuffer_height=540
 
 # uncomment if hdmi display is not detected and composite is being output
 #hdmi_force_hotplug=1
@@ -55,3 +55,7 @@ hdmi_drive=2
 dtparam=audio=on
 dtoverlay=vc4-kms-v3d
 #dtoverlay=vc4-fkms-v3d
+
+# silent boot
+disable_splash=0
+gpu_mem=128
