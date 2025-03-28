@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 export PATH=~/.local/bin:$PATH
 
 # VIDEO CONFIG
@@ -43,9 +44,6 @@ send-video-to-telegram () {
 }
 
 send-videos-to-telegram () {
-    if ! compgen -G ${videos_path}/*.${input_extension} > /dev/null; then
-        return
-    fi
     for video in ${videos_path}/*.${input_extension}; do
         if [[ -f "$video" ]]; then
             echo "- Sending: ${video}"
@@ -55,9 +53,6 @@ send-videos-to-telegram () {
 }
 
 send-pictures-to-telegram () {
-    if ! compgen -G ${pictures_path}/*.${picture_extension} > /dev/null; then
-        return
-    fi
     for picture in ${pictures_path}/*.${picture_extension}; do
         if [[ -f "$picture" ]]; then
             echo "- Sending: ${picture}"
